@@ -121,7 +121,6 @@ ChatInstance.listen((emotes) => {
 	const diff = Math.abs(group.position.z - camera.position.z);
 
 	group.position.x = -15 * (diff / 10);
-	group.target
 
 	let i = 0;
 	emotes.forEach((emote) => {
@@ -138,12 +137,15 @@ ChatInstance.listen((emotes) => {
 		0,
 		0
 	);
-	group.velocity.normalize();
+	//group.velocity.normalize();
+
+	group.lifespan = ((-group.position.x - group.position.x) / group.velocity.x) * 1000 * 1.1;
+	console.log(group.lifespan);
 
 	group.update = () => { // called every frame
 		let progress = (Date.now() - group.timestamp) / group.lifespan;
-		if (progress < 0.25) { // grow to full size in first quarter
-			group.position.y = progress * 4 - 1;
+		if (progress < 0.1) { // grow to full size in first quarter
+			group.position.y = progress * 10 - 1;
 		} else if (progress > 0.75) { // shrink to nothing in last quarter
 			group.position.y = (1 - progress) * 4 - 1;
 		} else { // maintain full size in middle
