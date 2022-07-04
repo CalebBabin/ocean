@@ -42,7 +42,6 @@ const ChatInstance = new TwitchChat({
 	},
 
 	materialHook: (material) => {
-		console.log(material);
 		applyShader(material);
 	},
 
@@ -112,26 +111,30 @@ function draw() {
 ** Handle Twitch Chat Emotes
 */
 const sceneEmoteArray = [];
-const emoteGeometry = new THREE.PlaneBufferGeometry(1, 1, 10, 1);
+const emoteGeometry = new THREE.PlaneBufferGeometry(1, 1, 1, 1);
 ChatInstance.listen((emotes) => {
 	const group = new THREE.Group();
-	group.lifespan = 30000;
+	group.lifespan = 60000;
 	group.timestamp = Date.now();
-	group.position.z = (camera.position.z - 1) * Math.random();
-	group.position.x = -10
+	group.position.z = camera.position.z * 2 * Math.random() - camera.position.z;
+
+	const diff = Math.abs(group.position.z - camera.position.z);
+
+	group.position.x = -15 * (diff / 10);
+	group.target
 
 	let i = 0;
 	emotes.forEach((emote) => {
 		const plane = new THREE.Mesh(emoteGeometry, emote.material);
 		plane.position.x = i;
-		plane.position.y = 0.5;
+		plane.position.y = 0.4;
 		group.add(plane);
 		i++;
 	})
 
 	// Set velocity to a random normalized value
 	group.velocity = new THREE.Vector3(
-		1,
+		0.5 + Math.random(),
 		0,
 		0
 	);
@@ -181,7 +184,7 @@ scene.add(ocean);
 
 import vert from './water.vert';
 import snoiseShader from './snoise.glsl';
-function applyShader (material) {
+function applyShader(material) {
 	const tickUniforms = () => {
 		if (uniforms) {
 			uniforms.u_time.value = performance.now();
@@ -194,7 +197,7 @@ function applyShader (material) {
 		shader.uniforms.u_time = { value: Math.random() * 1000 };
 		uniforms = shader.uniforms;
 		tickUniforms();
-	
+
 		material.userData.shader = shader;
 		shader.vertexShader = shader.vertexShader.replace(
 			'void main()',
@@ -210,7 +213,7 @@ function applyShader (material) {
 			${vert}
 		`);
 	};
-	
+
 	// Make sure WebGLRenderer doesn't reuse a single program
 	ocean.customProgramCacheKey = function () {
 		return parseInt(window.shaderPID++); // some random ish number
