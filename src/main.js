@@ -140,7 +140,6 @@ ChatInstance.listen((emotes) => {
 	//group.velocity.normalize();
 
 	group.lifespan = ((-group.position.x - group.position.x) / group.velocity.x) * 1000 * 1.1;
-	console.log(group.lifespan);
 
 	group.update = () => { // called every frame
 		let progress = (Date.now() - group.timestamp) / group.lifespan;
@@ -165,18 +164,18 @@ const ambientLight = new THREE.AmbientLight(new THREE.Color('#00a390'), 0.25);
 const sunLight = new THREE.DirectionalLight(new THREE.Color('#FFFFFF'), 1);
 scene.add(ambientLight);
 scene.add(sunLight);
-scene.background = new THREE.Color('#b8dcff');
 
 import skyTextureURL from './sky.png';
 scene.environment = new THREE.TextureLoader().load(skyTextureURL);
-scene.fog = new THREE.Fog(scene.background, 1, 80)
+scene.background = scene.environment
+scene.fog = new THREE.Fog(new THREE.Color('#FFFFFF'), 1, 80)
 
 const ocean = new THREE.Mesh(
-	new THREE.PlaneBufferGeometry(160, 60, 160, 60),
+	new THREE.PlaneBufferGeometry(160, 60, Math.round(160 * 0.75), Math.round(60 * 0.75)),
 	new THREE.MeshStandardMaterial({
 		color: new THREE.Color('#57beff'),
 		metalness: 0.05,
-		roughness: 0.8,
+		roughness: 1,
 		flatShading: true,
 	})
 );
