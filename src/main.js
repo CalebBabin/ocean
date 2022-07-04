@@ -66,7 +66,6 @@ camera.rotation.x = Math.PI / 12;
 
 const scene = new THREE.Scene();
 const renderer = new THREE.WebGLRenderer({ antialias: false });
-renderer.setSize(window.innerWidth, window.innerHeight);
 
 function resize() {
 	camera.aspect = window.innerWidth / window.innerHeight;
@@ -75,6 +74,7 @@ function resize() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+	resize();
 	window.addEventListener('resize', resize);
 	if (stats) document.body.appendChild(stats.dom);
 	document.body.appendChild(renderer.domElement);
@@ -181,8 +181,8 @@ scene.add(sky);
 const ocean = new THREE.Mesh(
 	new THREE.PlaneBufferGeometry(160, 60, Math.round(160 * 0.75), Math.round(60 * 0.75)),
 	new THREE.MeshStandardMaterial({
-		color: new THREE.Color('#57beff'),
-		metalness: 0.2,
+		color: new THREE.Color('#009DFF'),
+		metalness: 0.5,
 		roughness: 1,
 		flatShading: true,
 		envMap: skyTexture,
