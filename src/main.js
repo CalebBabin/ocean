@@ -61,6 +61,7 @@ const camera = new THREE.PerspectiveCamera(
 );
 camera.position.z = 20;
 camera.position.y = 2;
+camera.rotation.x = Math.PI / 12;
 
 
 const scene = new THREE.Scene();
@@ -160,23 +161,31 @@ ChatInstance.listen((emotes) => {
 /*
 	Ocean setup
 */
-const ambientLight = new THREE.AmbientLight(new THREE.Color('#00a390'), 0.25);
+const ambientLight = new THREE.AmbientLight(new THREE.Color('#1EFFF7'), 0.25);
 const sunLight = new THREE.DirectionalLight(new THREE.Color('#FFFFFF'), 1);
 scene.add(ambientLight);
 scene.add(sunLight);
 
 import skyTextureURL from './sky.png';
-scene.environment = new THREE.TextureLoader().load(skyTextureURL);
-scene.background = scene.environment
-scene.fog = new THREE.Fog(new THREE.Color('#FFFFFF'), 1, 80)
+const skyTexture = new THREE.TextureLoader().load(skyTextureURL);
+scene.environment = skyTexture;
+scene.fog = new THREE.Fog(new THREE.Color('#FFFFFF'), 1, 80);
+
+const sky = new THREE.Mesh(new THREE.SphereBufferGeometry(500, 16, 8), new THREE.MeshBasicMaterial({
+	map: skyTexture,
+	side: THREE.BackSide,
+	fog: false,
+}));
+scene.add(sky);
 
 const ocean = new THREE.Mesh(
 	new THREE.PlaneBufferGeometry(160, 60, Math.round(160 * 0.75), Math.round(60 * 0.75)),
 	new THREE.MeshStandardMaterial({
 		color: new THREE.Color('#57beff'),
-		metalness: 0.05,
+		metalness: 0.2,
 		roughness: 1,
 		flatShading: true,
+		envMap: skyTexture,
 	})
 );
 applyShader(ocean.material);
