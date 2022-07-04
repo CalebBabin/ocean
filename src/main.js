@@ -3,6 +3,8 @@ import * as THREE from "three";
 import Stats from "stats-js";
 import "./main.css";
 
+window.shaderPID = 10000;
+
 /*
 ** connect to twitch chat
 */
@@ -53,7 +55,9 @@ const camera = new THREE.PerspectiveCamera(
 	0.1,
 	1000
 );
-camera.position.z = 5;
+camera.position.z = 20;
+camera.position.y = 1;
+
 
 const scene = new THREE.Scene();
 const renderer = new THREE.WebGLRenderer({ antialias: false });
@@ -138,3 +142,67 @@ ChatInstance.listen((emotes) => {
 	scene.add(group);
 	sceneEmoteArray.push(group);
 });
+
+
+/*
+	Ocean setup
+*/
+const ambientLight = new THREE.AmbientLight(new THREE.Color('#00a390'), 0.25);
+const sunLight = new THREE.DirectionalLight(new THREE.Color('#FFFFFF'), 1);
+scene.add(ambientLight);
+scene.add(sunLight);
+scene.background = new THREE.Color('#b8dcff');
+
+import skyTextureURL from './sky.png';
+scene.environment = new THREE.TextureLoader().load(skyTextureURL);
+scene.fog = new THREE.Fog(scene.background, 1, 80)
+
+const ocean = new THREE.Mesh(
+	new THREE.PlaneBufferGeometry(160, 60, 160, 60),
+	new THREE.MeshStandardMaterial({
+		color: new THREE.Color('#57beff'),
+		metalness: 0.05,
+		roughness: 0.8,
+		flatShading: true,
+	})
+);
+import vert from './water.vert';
+import snoiseShader from './snoise.glsl';
+
+const tickUniforms = () => {
+	if (uniforms) {
+		uniforms.u_time.value = performance.now();
+	}
+	window.requestAnimationFrame(tickUniforms);
+}
+let uniforms = null;
+//ocean.material.onBeforeCompile(())
+ocean.material.onBeforeCompile = function (shader) {
+	shader.uniforms.u_time = { value: Math.random() * 1000 };
+	uniforms = shader.uniforms;
+	tickUniforms();
+
+	ocean.userData.shader = shader;
+
+	shader.vertexShader = shader.vertexShader.replace(
+		'void main()',
+		`
+			uniform float u_time;
+			${snoiseShader}
+			void main()
+		`);
+	shader.vertexShader = shader.vertexShader.replace(
+		'#include <begin_vertex>',
+		`
+		#include <begin_vertex>
+		${vert}
+	`);
+
+};
+
+// Make sure WebGLRenderer doesn't reuse a single program
+ocean.customProgramCacheKey = function () {
+	return parseInt(window.shaderPID++); // some random ish number
+};
+ocean.geometry.rotateX(-Math.PI / 2);
+scene.add(ocean);
