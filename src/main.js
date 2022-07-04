@@ -34,11 +34,16 @@ const ChatInstance = new TwitchChat({
 	THREE,
 
 	// If using planes, consider using MeshBasicMaterial instead of SpriteMaterial
-	materialType: THREE.SpriteMaterial,
+	materialType: THREE.MeshBasicMaterial,
 
 	// Passed to material options
 	materialOptions: {
 		transparent: true,
+	},
+
+	materialHook: (material) => {
+		console.log(material);
+		applyShader(material);
 	},
 
 	channels,
@@ -56,7 +61,7 @@ const camera = new THREE.PerspectiveCamera(
 	1000
 );
 camera.position.z = 20;
-camera.position.y = 1;
+camera.position.y = 2;
 
 
 const scene = new THREE.Scene();
@@ -107,35 +112,39 @@ function draw() {
 ** Handle Twitch Chat Emotes
 */
 const sceneEmoteArray = [];
+const emoteGeometry = new THREE.PlaneBufferGeometry(1, 1, 10, 1);
 ChatInstance.listen((emotes) => {
 	const group = new THREE.Group();
-	group.lifespan = 5000;
+	group.lifespan = 30000;
 	group.timestamp = Date.now();
+	group.position.z = (camera.position.z - 1) * Math.random();
+	group.position.x = -10
 
 	let i = 0;
 	emotes.forEach((emote) => {
-		const sprite = new THREE.Sprite(emote.material);
-		sprite.position.x = i;
-		group.add(sprite);
+		const plane = new THREE.Mesh(emoteGeometry, emote.material);
+		plane.position.x = i;
+		plane.position.y = 0.5;
+		group.add(plane);
 		i++;
 	})
 
 	// Set velocity to a random normalized value
 	group.velocity = new THREE.Vector3(
-		(Math.random() - 0.5) * 2,
-		(Math.random() - 0.5) * 2,
-		(Math.random() - 0.5) * 2
+		1,
+		0,
+		0
 	);
 	group.velocity.normalize();
 
 	group.update = () => { // called every frame
 		let progress = (Date.now() - group.timestamp) / group.lifespan;
 		if (progress < 0.25) { // grow to full size in first quarter
-			group.scale.setScalar(progress * 4);
+			group.position.y = progress * 4 - 1;
 		} else if (progress > 0.75) { // shrink to nothing in last quarter
-			group.scale.setScalar((1 - progress) * 4);
+			group.position.y = (1 - progress) * 4 - 1;
 		} else { // maintain full size in middle
-			group.scale.setScalar(1);
+			group.position.y = 0;
 		}
 	}
 
@@ -166,43 +175,44 @@ const ocean = new THREE.Mesh(
 		flatShading: true,
 	})
 );
-import vert from './water.vert';
-import snoiseShader from './snoise.glsl';
-
-const tickUniforms = () => {
-	if (uniforms) {
-		uniforms.u_time.value = performance.now();
-	}
-	window.requestAnimationFrame(tickUniforms);
-}
-let uniforms = null;
-//ocean.material.onBeforeCompile(())
-ocean.material.onBeforeCompile = function (shader) {
-	shader.uniforms.u_time = { value: Math.random() * 1000 };
-	uniforms = shader.uniforms;
-	tickUniforms();
-
-	ocean.userData.shader = shader;
-
-	shader.vertexShader = shader.vertexShader.replace(
-		'void main()',
-		`
-			uniform float u_time;
-			${snoiseShader}
-			void main()
-		`);
-	shader.vertexShader = shader.vertexShader.replace(
-		'#include <begin_vertex>',
-		`
-		#include <begin_vertex>
-		${vert}
-	`);
-
-};
-
-// Make sure WebGLRenderer doesn't reuse a single program
-ocean.customProgramCacheKey = function () {
-	return parseInt(window.shaderPID++); // some random ish number
-};
+applyShader(ocean.material);
 ocean.geometry.rotateX(-Math.PI / 2);
 scene.add(ocean);
+
+import vert from './water.vert';
+import snoiseShader from './snoise.glsl';
+function applyShader (material) {
+	const tickUniforms = () => {
+		if (uniforms) {
+			uniforms.u_time.value = performance.now();
+		}
+		window.requestAnimationFrame(tickUniforms);
+	}
+	let uniforms = null;
+	//material.onBeforeCompile(())
+	material.onBeforeCompile = function (shader) {
+		shader.uniforms.u_time = { value: Math.random() * 1000 };
+		uniforms = shader.uniforms;
+		tickUniforms();
+	
+		material.userData.shader = shader;
+		shader.vertexShader = shader.vertexShader.replace(
+			'void main()',
+			`
+				uniform float u_time;
+				${snoiseShader}
+				void main()
+			`);
+		shader.vertexShader = shader.vertexShader.replace(
+			'#include <begin_vertex>',
+			`
+			#include <begin_vertex>
+			${vert}
+		`);
+	};
+	
+	// Make sure WebGLRenderer doesn't reuse a single program
+	ocean.customProgramCacheKey = function () {
+		return parseInt(window.shaderPID++); // some random ish number
+	};
+}
