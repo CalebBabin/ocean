@@ -182,8 +182,8 @@ const ocean = new THREE.Mesh(
 	new THREE.PlaneBufferGeometry(160, 60, Math.round(160 * 0.75), Math.round(60 * 0.75)),
 	new THREE.MeshStandardMaterial({
 		color: new THREE.Color('#009DFF'),
-		metalness: 0.5,
-		roughness: 1,
+		metalness: 0.4,
+		roughness: 0.75,
 		flatShading: true,
 		envMap: skyTexture,
 	})
