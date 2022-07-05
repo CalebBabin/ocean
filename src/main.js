@@ -143,7 +143,7 @@ ChatInstance.listen((emotes) => {
 
 	// Set velocity to a random normalized value
 	group.velocity = new THREE.Vector3(
-		0.5 + Math.random(),
+		0.75 + Math.random(),
 		0,
 		0
 	);
