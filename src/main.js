@@ -282,7 +282,7 @@ setInterval(()=>{
 	scene.add(element);
 	element.scale.setScalar(2);
 	element.position.y = 20 + (Math.random() * 10);
-	element.position.z = Math.random() * -100;
+	element.position.z = Math.random() * -60;
 	element.position.x = camera.aspect * (element.position.z - 1);
 	element.position.z += camera.position.z;
 	element.tick = (delta) => {
