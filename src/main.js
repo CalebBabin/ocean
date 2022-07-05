@@ -103,6 +103,15 @@ function draw() {
 		}
 	}
 
+	for (let index = cloudMeshes.length - 1; index >= 0; index--) {
+		const element = cloudMeshes[index];
+		element.tick(delta);
+		if (element.needsDestruction) {
+			cloudMeshes.splice(index, 1);
+			scene.remove(element);
+		}
+	}
+
 	renderer.render(scene, camera);
 	if (stats) stats.end();
 };
@@ -163,6 +172,7 @@ ChatInstance.listen((emotes) => {
 */
 const ambientLight = new THREE.AmbientLight(new THREE.Color('#1EFFF7'), 0.25);
 const sunLight = new THREE.DirectionalLight(new THREE.Color('#FFFFFF'), 1);
+sunLight.position.set(0.1,1,0.25);
 scene.add(ambientLight);
 scene.add(sunLight);
 
@@ -232,7 +242,7 @@ function applyShader(material, delayed = false, type = 'water') {
 
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 const modelLoader = new GLTFLoader();
-modelLoader.load('/island.glb',function (gltf) {
+modelLoader.load('/island.glb', function (gltf) {
 	scene.add(gltf.scene);
 	gltf.scene.rotation.y = -Math.PI;
 	gltf.scene.scale.setScalar(2.5);
@@ -241,3 +251,44 @@ modelLoader.load('/island.glb',function (gltf) {
 	const tree = gltf.scene.getObjectByName('Tree');
 	applyShader(tree.material, false, 'wind')
 });
+
+const clouds = [
+	'cloud01.gltf',
+	'cloud02.gltf',
+	'cloud03.gltf',
+	'cloud04.gltf',
+	'cloud05.gltf',
+	'cloud06.gltf',
+	'cloud07.gltf',
+	'cloudBorpa.gltf',
+];
+for (let index = 0; index < clouds.length; index++) {
+	modelLoader.load('/clouds/' + clouds[index], (gltf)=>{
+		clouds[index] = gltf.scene.children[0];
+	});
+}
+const cloudMat = new THREE.MeshPhongMaterial({
+	color: 0xffffff,
+	emissive: 0x777777,
+})
+const cloudMeshes = [];
+setInterval(()=>{
+	const cloud = clouds[Math.floor(Math.random() * clouds.length)];
+	const element = new THREE.Mesh(
+		cloud.geometry,
+		cloudMat
+	);
+	cloudMeshes.push(element);
+	scene.add(element);
+	element.scale.setScalar(2);
+	element.position.y = 20 + (Math.random() * 10);
+	element.position.z = Math.random() * -100;
+	element.position.x = camera.aspect * (element.position.z - 1);
+	element.position.z += camera.position.z;
+	element.tick = (delta) => {
+		element.position.x += delta;
+		if (element.position.x >= 50) {
+			element.needsDestruction = true;
+		}
+	}
+}, 10000)
