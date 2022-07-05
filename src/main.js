@@ -269,7 +269,7 @@ for (let index = 0; index < clouds.length; index++) {
 }
 const cloudMat = new THREE.MeshPhongMaterial({
 	color: 0xffffff,
-	emissive: 0x777777,
+	emissive: 0x999999,
 })
 const cloudMeshes = [];
 setInterval(()=>{
