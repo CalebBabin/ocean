@@ -173,7 +173,7 @@ ChatInstance.listen((emotes) => {
 */
 const ambientLight = new THREE.AmbientLight(new THREE.Color('#1EFFF7'), 0.25);
 const sunLight = new THREE.DirectionalLight(new THREE.Color('#FFFFFF'), 1);
-sunLight.position.set(0.1,1,0.25);
+sunLight.position.set(0.1, 1, 0.25);
 scene.add(ambientLight);
 scene.add(sunLight);
 
@@ -260,16 +260,18 @@ const clouds = [
 	'cloud04.glb',
 ];
 for (let index = 0; index < clouds.length; index++) {
-	modelLoader.load('/clouds/' + clouds[index], (gltf)=>{
+	modelLoader.load('/clouds/' + clouds[index], (gltf) => {
 		clouds[index] = gltf.scene.children[0];
 	});
 }
 const cloudMat = new THREE.MeshPhongMaterial({
 	color: 0xffffff,
 	emissive: 0x999999,
+	flatShading: true,
+	fog: false,
 })
 const cloudMeshes = [];
-setInterval(()=>{
+setInterval(() => {
 	const cloud = clouds[Math.floor(Math.random() * clouds.length)];
 	const element = new THREE.Mesh(
 		cloud.geometry,
@@ -281,11 +283,12 @@ setInterval(()=>{
 	element.rotation.y = Math.random() * Math.PI * 2;
 	element.position.y = 20 + (Math.random() * 10);
 	element.position.z = Math.random() * -60;
-	element.position.x = camera.aspect * (element.position.z - 3);
+	const spawnX = camera.aspect * (element.position.z - 3);
+	element.position.x = spawnX;
 	element.position.z += camera.position.z;
 	element.tick = (delta) => {
 		element.position.x += delta;
-		if (element.position.x >= 70 * camera.aspect) {
+		if (element.position.x >= -spawnX) {
 			element.needsDestruction = true;
 		}
 	}
