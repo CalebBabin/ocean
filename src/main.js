@@ -103,14 +103,14 @@ function draw() {
 		}
 	}
 
-	for (let index = cloudMeshes.length - 1; index >= 0; index--) {
+	/*for (let index = cloudMeshes.length - 1; index >= 0; index--) {
 		const element = cloudMeshes[index];
 		element.tick(delta);
 		if (element.needsDestruction) {
 			cloudMeshes.splice(index, 1);
 			scene.remove(element);
 		}
-	}
+	}*/
 
 	renderer.render(scene, camera);
 	if (stats) stats.end();
@@ -252,6 +252,7 @@ modelLoader.load('/island.glb', function (gltf) {
 	applyShader(tree.material, false, 'wind')
 });
 
+/*
 const clouds = [
 	'cloud01.gltf',
 	'cloud02.gltf',
@@ -291,4 +292,4 @@ setInterval(()=>{
 			element.needsDestruction = true;
 		}
 	}
-}, 10000)
+}, 10000)*/
