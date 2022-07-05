@@ -287,7 +287,7 @@ setInterval(()=>{
 	element.position.z += camera.position.z;
 	element.tick = (delta) => {
 		element.position.x += delta;
-		if (element.position.x >= 50) {
+		if (element.position.x >= 60 * camera.aspect) {
 			element.needsDestruction = true;
 		}
 	}
