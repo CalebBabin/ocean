@@ -65,7 +65,7 @@ camera.rotation.x = Math.PI / 12;
 
 
 const scene = new THREE.Scene();
-const renderer = new THREE.WebGLRenderer({ antialias: false });
+const renderer = new THREE.WebGLRenderer({ antialias: true });
 
 function resize() {
 	camera.aspect = window.innerWidth / window.innerHeight;
@@ -190,9 +190,10 @@ applyShader(ocean.material);
 ocean.geometry.rotateX(-Math.PI / 2);
 scene.add(ocean);
 
-import vert from './water.vert';
+import waterVert from './water.vert';
+import windVert from './wind.vert';
 import snoiseShader from './snoise.glsl';
-function applyShader(material, delayed = false) {
+function applyShader(material, delayed = false, type = 'water') {
 	const tickUniforms = () => {
 		if (uniforms) {
 			uniforms.u_time.value = performance.now() + (delayed ? -250 : 0);
@@ -218,7 +219,8 @@ function applyShader(material, delayed = false) {
 			'#include <begin_vertex>',
 			`
 			#include <begin_vertex>
-			${vert}
+			${type === 'water' ? waterVert : ''}
+			${type === 'wind' ? windVert : ''}
 		`);
 	};
 
@@ -227,3 +229,15 @@ function applyShader(material, delayed = false) {
 		return parseInt(window.shaderPID++); // some random ish number
 	};
 }
+
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+const modelLoader = new GLTFLoader();
+modelLoader.load('/island.glb',function (gltf) {
+	scene.add(gltf.scene);
+	gltf.scene.rotation.y = -Math.PI;
+	gltf.scene.scale.setScalar(2.5);
+	gltf.scene.position.set(30, -2, -30);
+
+	const tree = gltf.scene.getObjectByName('Tree');
+	applyShader(tree.material, false, 'wind')
+});
