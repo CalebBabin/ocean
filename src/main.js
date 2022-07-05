@@ -280,11 +280,11 @@ setInterval(()=>{
 	element.rotation.y = Math.random() * Math.PI * 2;
 	element.position.y = 20 + (Math.random() * 10);
 	element.position.z = Math.random() * -60;
-	element.position.x = camera.aspect * (element.position.z - 1);
+	element.position.x = camera.aspect * (element.position.z - 3);
 	element.position.z += camera.position.z;
 	element.tick = (delta) => {
 		element.position.x += delta;
-		if (element.position.x >= 60 * camera.aspect) {
+		if (element.position.x >= 70 * camera.aspect) {
 			element.needsDestruction = true;
 		}
 	}
