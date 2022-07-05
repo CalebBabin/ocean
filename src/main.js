@@ -121,7 +121,7 @@ ChatInstance.listen((emotes) => {
 
 	const diff = Math.abs(group.position.z - camera.position.z);
 
-	group.position.x = -15 * (diff / 10);
+	group.position.x = -15 * (diff / 10) * (Math.random() * 0.5 + 0.5);
 
 	let i = 0;
 	emotes.forEach((emote) => {
