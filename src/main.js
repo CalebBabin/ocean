@@ -42,7 +42,7 @@ const ChatInstance = new TwitchChat({
 	},
 
 	materialHook: (material) => {
-		applyShader(material);
+		applyShader(material, true);
 	},
 
 	channels,
@@ -168,7 +168,6 @@ scene.add(sunLight);
 
 import skyTextureURL from './sky.png';
 const skyTexture = new THREE.TextureLoader().load(skyTextureURL);
-scene.environment = skyTexture;
 scene.fog = new THREE.Fog(new THREE.Color('#FFFFFF'), 1, 80);
 
 const sky = new THREE.Mesh(new THREE.SphereBufferGeometry(500, 16, 8), new THREE.MeshBasicMaterial({
@@ -185,7 +184,6 @@ const ocean = new THREE.Mesh(
 		metalness: 0.4,
 		roughness: 0.75,
 		flatShading: true,
-		envMap: skyTexture,
 	})
 );
 applyShader(ocean.material);
@@ -194,10 +192,10 @@ scene.add(ocean);
 
 import vert from './water.vert';
 import snoiseShader from './snoise.glsl';
-function applyShader(material) {
+function applyShader(material, delayed = false) {
 	const tickUniforms = () => {
 		if (uniforms) {
-			uniforms.u_time.value = performance.now();
+			uniforms.u_time.value = performance.now() + (delayed ? -250 : 0);
 		}
 		window.requestAnimationFrame(tickUniforms);
 	}
