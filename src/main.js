@@ -103,14 +103,14 @@ function draw() {
 		}
 	}
 
-	/*for (let index = cloudMeshes.length - 1; index >= 0; index--) {
+	for (let index = cloudMeshes.length - 1; index >= 0; index--) {
 		const element = cloudMeshes[index];
 		element.tick(delta);
 		if (element.needsDestruction) {
 			cloudMeshes.splice(index, 1);
 			scene.remove(element);
 		}
-	}*/
+	}
 
 	renderer.render(scene, camera);
 	if (stats) stats.end();
@@ -252,16 +252,11 @@ modelLoader.load('/island.glb', function (gltf) {
 	applyShader(tree.material, false, 'wind')
 });
 
-/*
 const clouds = [
-	'cloud01.gltf',
-	'cloud02.gltf',
-	'cloud03.gltf',
-	'cloud04.gltf',
-	'cloud05.gltf',
-	'cloud06.gltf',
-	'cloud07.gltf',
-	'cloudBorpa.gltf',
+	'cloud01.glb',
+	'cloud02.glb',
+	'cloud03.glb',
+	'cloud04.glb',
 ];
 for (let index = 0; index < clouds.length; index++) {
 	modelLoader.load('/clouds/' + clouds[index], (gltf)=>{
@@ -282,6 +277,7 @@ setInterval(()=>{
 	cloudMeshes.push(element);
 	scene.add(element);
 	element.scale.setScalar(2);
+	element.rotation.y = Math.random() * Math.PI * 2;
 	element.position.y = 20 + (Math.random() * 10);
 	element.position.z = Math.random() * -60;
 	element.position.x = camera.aspect * (element.position.z - 1);
@@ -292,4 +288,4 @@ setInterval(()=>{
 			element.needsDestruction = true;
 		}
 	}
-}, 10000)*/
+}, 10000)
