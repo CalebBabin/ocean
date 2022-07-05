@@ -154,10 +154,10 @@ ChatInstance.listen((emotes) => {
 
 	group.update = () => { // called every frame
 		let progress = (Date.now() - group.timestamp) / group.lifespan;
-		if (progress < 0.1) { // grow to full size in first quarter
-			group.position.y = progress * 10 - 1;
-		} else if (progress > 0.75) { // shrink to nothing in last quarter
-			group.position.y = (1 - progress) * 4 - 1;
+		if (progress < 0.1) { // float up in first 1/10
+			group.position.y = -Math.pow(1 - (progress * 10), 2);
+		} else if (progress > 0.9) { // sink down last 1/10
+			group.position.y = -Math.pow((progress - 0.9) * 10, 2);
 		} else { // maintain full size in middle
 			group.position.y = 0;
 		}
