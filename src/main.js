@@ -124,7 +124,6 @@ const sceneEmoteArray = [];
 const emoteGeometry = new THREE.PlaneBufferGeometry(1, 1, 1, 1);
 ChatInstance.listen((emotes) => {
 	const group = new THREE.Group();
-	group.lifespan = 60000;
 	group.timestamp = Date.now();
 	group.position.z = camera.position.z * 2 * Math.random() - camera.position.z;
 
@@ -150,7 +149,7 @@ ChatInstance.listen((emotes) => {
 	//group.velocity.normalize();
 
 	group.lifespan = ((-group.position.x - group.position.x) / group.velocity.x) * 1000;
-	group.lifespan *= Math.random() + 0.25;
+	group.lifespan *= Math.pow(Math.random(), 2) * 0.75 + 0.25;
 
 	group.update = () => { // called every frame
 		let progress = (Date.now() - group.timestamp) / group.lifespan;
