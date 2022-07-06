@@ -170,15 +170,15 @@ ChatInstance.listen((emotes) => {
 /*
 	Ocean setup
 */
-const ambientLight = new THREE.AmbientLight(new THREE.Color('#1EFFF7'), 0.25);
+const ambientLight = new THREE.AmbientLight(new THREE.Color('#9EFFF7'), 0.1);
 const sunLight = new THREE.DirectionalLight(new THREE.Color('#FFFFFF'), 1);
-sunLight.position.set(0.1, 1, 0.25);
+sunLight.position.set(0.1, 1, -0.25);
 scene.add(ambientLight);
 scene.add(sunLight);
 
 import skyTextureURL from './sky.png';
 const skyTexture = new THREE.TextureLoader().load(skyTextureURL);
-scene.fog = new THREE.Fog(new THREE.Color('#FFFFFF'), 1, 80);
+scene.fog = new THREE.Fog(new THREE.Color('#FFFFFF'), 1, 100);
 
 const sky = new THREE.Mesh(new THREE.SphereBufferGeometry(500, 16, 8), new THREE.MeshBasicMaterial({
 	map: skyTexture,
@@ -190,9 +190,9 @@ scene.add(sky);
 const ocean = new THREE.Mesh(
 	new THREE.PlaneBufferGeometry(160, 60, Math.round(160 * 0.75), Math.round(60 * 0.75)),
 	new THREE.MeshStandardMaterial({
-		color: new THREE.Color('#009DFF'),
-		metalness: 0.4,
-		roughness: 0.75,
+		color: new THREE.Color('#2BD9E5'),
+		metalness: 0.2,
+		roughness: 1,
 		flatShading: true,
 	})
 );
