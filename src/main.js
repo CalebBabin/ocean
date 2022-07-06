@@ -246,7 +246,7 @@ modelLoader.load('/island.glb', function (gltf) {
 	scene.add(gltf.scene);
 	gltf.scene.rotation.y = -Math.PI;
 	gltf.scene.scale.setScalar(2.5);
-	gltf.scene.position.set(30, -2, -30);
+	gltf.scene.position.set(16.875 * camera.aspect, -2, -30);
 
 	const tree = gltf.scene.getObjectByName('Tree');
 	applyShader(tree.material, false, 'wind')
