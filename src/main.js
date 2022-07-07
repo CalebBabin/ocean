@@ -171,7 +171,7 @@ scene.add(sunLight);
 
 import skyTextureURL from './sky.png';
 const skyTexture = new THREE.TextureLoader().load(skyTextureURL);
-scene.fog = new THREE.Fog(new THREE.Color('#D894F3'), 1, 80);
+scene.fog = new THREE.Fog(new THREE.Color('#BDA6FF'), 1, 80);
 
 const sky = new THREE.Mesh(new THREE.SphereBufferGeometry(2000, 16, 8), new THREE.MeshBasicMaterial({
 	map: skyTexture,
@@ -271,7 +271,7 @@ for (let index = 0; index < clouds.length; index++) {
 }
 const cloudMat = new THREE.MeshPhongMaterial({
 	color: 0x444444,
-	emissive: 0xF2D8FF,
+	emissive: 0xE5DDFF,
 	flatShading: true,
 	fog: false,
 	shininess: 0,
