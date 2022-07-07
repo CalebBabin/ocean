@@ -286,7 +286,7 @@ const spawnCloud = (position, count) => {
 	);
 	element.scale.setScalar(40 * Math.pow(Math.random(), 2) + 10);
 	element.rotation.y = Math.random() * Math.PI * 2;
-	element.position.y = 100 + Math.random() * 300;
+	element.position.y = 100 + (Math.random() > 0.5 ? 400 : 0);
 
 	const direction = ((Math.random() * Math.PI * 2) / count) + (position * Math.PI * 2);
 	const distance = Math.random() * 1000 + 400;
