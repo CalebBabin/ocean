@@ -103,14 +103,7 @@ function draw() {
 		}
 	}
 
-	for (let index = cloudMeshes.length - 1; index >= 0; index--) {
-		const element = cloudMeshes[index];
-		element.tick(delta);
-		if (element.needsDestruction) {
-			cloudMeshes.splice(index, 1);
-			scene.remove(element);
-		}
-	}
+	cloudGroup.tick(delta);
 
 	renderer.render(scene, camera);
 	if (stats) stats.end();
@@ -252,7 +245,11 @@ modelLoader.load('/island.glb', function (gltf) {
 	applyShader(tree.material, false, 'wind')
 });
 
-const cloudMeshes = [];
+const cloudGroup = new THREE.Group();
+cloudGroup.tick = (delta) => {
+	cloudGroup.rotation.y -= delta * 0.01;
+}
+scene.add(cloudGroup);
 const clouds = [
 	'cloud01.glb',
 	'cloud02.glb',
@@ -264,10 +261,10 @@ for (let index = 0; index < clouds.length; index++) {
 	modelLoader.load('/clouds/' + clouds[index], (gltf) => {
 		clouds[index] = gltf.scene.children[0];
 		loadedClouds++;
-		if(loadedClouds === clouds.length) {
-			const count = 10;
+		if (loadedClouds === clouds.length) {
+			const count = 30;
 			for (let index = 0; index < count; index++) {
-				spawnCloud(index / count);
+				spawnCloud(index / count, count);
 			}
 		}
 	});
@@ -280,32 +277,20 @@ const cloudMat = new THREE.MeshPhongMaterial({
 	shininess: 0,
 })
 
-const spawnCloud = (position) => {
+const spawnCloud = (position, count) => {
 	const cloud = clouds[Math.floor(Math.random() * clouds.length)];
 	if (typeof cloud === 'string') return;
-
 	const element = new THREE.Mesh(
 		cloud.geometry,
 		cloudMat
 	);
-	cloudMeshes.push(element);
-	scene.add(element);
 	element.scale.setScalar(40 * Math.pow(Math.random(), 2) + 10);
-	element.rotation.y = Math.random() > 0.5 ? Math.PI/2 : 0;
-	element.position.y = 300;
-	element.position.z = -300 + -500 * Math.random();
-	const spawnX = camera.aspect * 1.4 * element.position.z;
-	element.position.x = spawnX;
-	if (position) {
-		element.position.x = position * spawnX * 2 - spawnX;
-	}
-	element.position.z += camera.position.z;
-	const speed = 0.25 + Math.random();
-	element.tick = (delta) => {
-		element.position.x += delta * 10 * speed;
-		if (element.position.x >= -spawnX + element.scale.x && !element.needsDestruction) {
-			element.needsDestruction = true;
-			spawnCloud();
-		}
-	}
+	element.rotation.y = Math.random() * Math.PI * 2;
+	element.position.y = 100 + Math.random() * 300;
+
+	const direction = ((Math.random() * Math.PI * 2) / count) + (position * Math.PI * 2);
+	const distance = Math.random() * 1000 + 400;
+	element.position.x = Math.sin(direction) * distance;
+	element.position.z = Math.cos(direction) * distance;
+	cloudGroup.add(element);
 };
