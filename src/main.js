@@ -271,7 +271,7 @@ for (let index = 0; index < clouds.length; index++) {
 }
 const cloudMat = new THREE.MeshPhongMaterial({
 	color: 0x444444,
-	emissive: 0xE5DDFF,
+	emissive: 0xCEC7E5,
 	flatShading: true,
 	fog: false,
 	shininess: 0,
