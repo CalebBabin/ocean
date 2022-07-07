@@ -57,7 +57,7 @@ const camera = new THREE.PerspectiveCamera(
 	70,
 	window.innerWidth / window.innerHeight,
 	0.1,
-	1000
+	3000
 );
 camera.position.z = 20;
 camera.position.y = 2;
@@ -180,7 +180,7 @@ import skyTextureURL from './sky.png';
 const skyTexture = new THREE.TextureLoader().load(skyTextureURL);
 scene.fog = new THREE.Fog(new THREE.Color('#FFFFFF'), 1, 100);
 
-const sky = new THREE.Mesh(new THREE.SphereBufferGeometry(500, 16, 8), new THREE.MeshBasicMaterial({
+const sky = new THREE.Mesh(new THREE.SphereBufferGeometry(2000, 16, 8), new THREE.MeshBasicMaterial({
 	map: skyTexture,
 	side: THREE.BackSide,
 	fog: false,
@@ -252,11 +252,12 @@ modelLoader.load('/island.glb', function (gltf) {
 	applyShader(tree.material, false, 'wind')
 });
 
+const cloudMeshes = [];
 const clouds = [
 	'cloud01.glb',
 	'cloud02.glb',
-	'cloud03.glb',
-	'cloud04.glb',
+	/*'cloud03.glb',
+	'cloud04.glb',*/
 ];
 for (let index = 0; index < clouds.length; index++) {
 	modelLoader.load('/clouds/' + clouds[index], (gltf) => {
@@ -264,31 +265,46 @@ for (let index = 0; index < clouds.length; index++) {
 	});
 }
 const cloudMat = new THREE.MeshPhongMaterial({
-	color: 0xffffff,
-	emissive: 0x999999,
+	color: 0x666666,
+	emissive: 0xBBBBBB,
 	flatShading: true,
 	fog: false,
+	shininess: 0,
 })
-const cloudMeshes = [];
-setInterval(() => {
+
+const spawnCloud = (position) => {
 	const cloud = clouds[Math.floor(Math.random() * clouds.length)];
+	if (typeof cloud === 'string') return;
+
 	const element = new THREE.Mesh(
 		cloud.geometry,
 		cloudMat
 	);
 	cloudMeshes.push(element);
 	scene.add(element);
-	element.scale.setScalar(2);
-	element.rotation.y = Math.random() * Math.PI * 2;
-	element.position.y = 20 + (Math.random() * 10);
-	element.position.z = Math.random() * -60;
-	const spawnX = camera.aspect * (element.position.z - 3);
+	element.scale.setScalar(40 * Math.pow(Math.random(), 2) + 10);
+	element.rotation.y = Math.random() > 0.5 ? Math.PI/2 : 0;
+	element.position.y = 300;
+	element.position.z = -300 + -500 * Math.random();
+	const spawnX = camera.aspect * 1.4 * element.position.z;
 	element.position.x = spawnX;
+	if (position) {
+		element.position.x = position * spawnX * 2 - spawnX;
+	}
 	element.position.z += camera.position.z;
+	const speed = 0.25 + Math.random();
 	element.tick = (delta) => {
-		element.position.x += delta;
-		if (element.position.x >= -spawnX) {
+		element.position.x += delta * 20 * speed;
+		if (element.position.x >= -spawnX + element.scale.x && !element.needsDestruction) {
 			element.needsDestruction = true;
+			spawnCloud();
 		}
 	}
-}, 10000)
+};
+
+setTimeout(() => {
+	const count = 10;
+	for (let index = 0; index < count; index++) {
+		spawnCloud(index / count);
+	}
+}, 1000)
