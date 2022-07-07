@@ -259,9 +259,17 @@ const clouds = [
 	/*'cloud03.glb',
 	'cloud04.glb',*/
 ];
+let loadedClouds = 0;
 for (let index = 0; index < clouds.length; index++) {
 	modelLoader.load('/clouds/' + clouds[index], (gltf) => {
 		clouds[index] = gltf.scene.children[0];
+		loadedClouds++;
+		if(loadedClouds === clouds.length) {
+			const count = 10;
+			for (let index = 0; index < count; index++) {
+				spawnCloud(index / count);
+			}
+		}
 	});
 }
 const cloudMat = new THREE.MeshPhongMaterial({
@@ -294,17 +302,10 @@ const spawnCloud = (position) => {
 	element.position.z += camera.position.z;
 	const speed = 0.25 + Math.random();
 	element.tick = (delta) => {
-		element.position.x += delta * 20 * speed;
+		element.position.x += delta * 10 * speed;
 		if (element.position.x >= -spawnX + element.scale.x && !element.needsDestruction) {
 			element.needsDestruction = true;
 			spawnCloud();
 		}
 	}
 };
-
-setTimeout(() => {
-	const count = 10;
-	for (let index = 0; index < count; index++) {
-		spawnCloud(index / count);
-	}
-}, 1000)
