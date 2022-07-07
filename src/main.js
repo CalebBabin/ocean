@@ -171,7 +171,7 @@ scene.add(sunLight);
 
 import skyTextureURL from './sky.png';
 const skyTexture = new THREE.TextureLoader().load(skyTextureURL);
-scene.fog = new THREE.Fog(new THREE.Color('#FFFFFF'), 1, 100);
+scene.fog = new THREE.Fog(new THREE.Color('#D894F3'), 1, 80);
 
 const sky = new THREE.Mesh(new THREE.SphereBufferGeometry(2000, 16, 8), new THREE.MeshBasicMaterial({
 	map: skyTexture,
@@ -183,7 +183,7 @@ scene.add(sky);
 const ocean = new THREE.Mesh(
 	new THREE.PlaneBufferGeometry(160, 60, Math.round(160 * 0.6), Math.round(60 * 0.6)),
 	new THREE.MeshStandardMaterial({
-		color: new THREE.Color('#2BD9E5'),
+		color: new THREE.Color('#4FD0FF'),
 		metalness: 0.2,
 		roughness: 1,
 		flatShading: true,
@@ -239,7 +239,7 @@ modelLoader.load('/island.glb', function (gltf) {
 	scene.add(gltf.scene);
 	gltf.scene.rotation.y = -Math.PI;
 	gltf.scene.scale.setScalar(2.5);
-	gltf.scene.position.set(16.875 * camera.aspect, -2, -30);
+	gltf.scene.position.set(16.875 * camera.aspect, -2, -27);
 
 	const tree = gltf.scene.getObjectByName('Tree');
 	applyShader(tree.material, false, 'wind')
@@ -270,8 +270,8 @@ for (let index = 0; index < clouds.length; index++) {
 	});
 }
 const cloudMat = new THREE.MeshPhongMaterial({
-	color: 0x666666,
-	emissive: 0xBBBBBB,
+	color: 0x444444,
+	emissive: 0xF2D8FF,
 	flatShading: true,
 	fog: false,
 	shininess: 0,
