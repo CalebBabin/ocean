@@ -188,7 +188,7 @@ const sky = new THREE.Mesh(new THREE.SphereBufferGeometry(500, 16, 8), new THREE
 scene.add(sky);
 
 const ocean = new THREE.Mesh(
-	new THREE.PlaneBufferGeometry(160, 60, Math.round(160 * 0.75), Math.round(60 * 0.75)),
+	new THREE.PlaneBufferGeometry(160, 60, Math.round(160 * 0.6), Math.round(60 * 0.6)),
 	new THREE.MeshStandardMaterial({
 		color: new THREE.Color('#2BD9E5'),
 		metalness: 0.2,
