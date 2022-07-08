@@ -4,8 +4,6 @@
 
 > Part of [this project](https://github.com/moonscreens/info).
 
-If you're looking for a more basic template or are more comfortable using the canvas API yourself, check out [intro-example](https://github.com/moonscreens/intro-example).
-
 Include `?channel=moonmoon`, or `?channel=channel1,channel2,channel3...` in your URL to connect to a specific channel, great for testing!
 
 Include `?stats=true` to enable performance stats (should pop up in the top left corner).
