@@ -171,7 +171,7 @@ scene.add(sunLight);
 
 import skyTextureURL from './sky.png';
 const skyTexture = new THREE.TextureLoader().load(skyTextureURL);
-scene.fog = new THREE.Fog(new THREE.Color('#BDA6FF'), 1, 80);
+scene.fog = new THREE.Fog(new THREE.Color('#FFFFFF'), 1, 100);
 
 const sky = new THREE.Mesh(new THREE.SphereBufferGeometry(2000, 16, 8), new THREE.MeshBasicMaterial({
 	map: skyTexture,
@@ -183,7 +183,7 @@ scene.add(sky);
 const ocean = new THREE.Mesh(
 	new THREE.PlaneBufferGeometry(160, 60, Math.round(160 * 0.6), Math.round(60 * 0.6)),
 	new THREE.MeshStandardMaterial({
-		color: new THREE.Color('#4FD0FF'),
+		color: new THREE.Color('#2BD9E5'),
 		metalness: 0.2,
 		roughness: 1,
 		flatShading: true,
@@ -270,8 +270,8 @@ for (let index = 0; index < clouds.length; index++) {
 	});
 }
 const cloudMat = new THREE.MeshPhongMaterial({
-	color: 0x444444,
-	emissive: 0xCEC7E5,
+	color: 0x666666,
+	emissive: 0xBBBBBB,
 	flatShading: true,
 	fog: false,
 	shininess: 0,
