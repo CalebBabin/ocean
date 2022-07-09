@@ -253,8 +253,8 @@ scene.add(cloudGroup);
 const clouds = [
 	'cloud01.glb',
 	'cloud02.glb',
-	/*'cloud03.glb',
-	'cloud04.glb',*/
+	'cloud03.glb',
+	/*'cloud04.glb',*/
 ];
 let loadedClouds = 0;
 for (let index = 0; index < clouds.length; index++) {
