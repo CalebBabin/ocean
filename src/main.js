@@ -254,7 +254,7 @@ const clouds = [
 	'cloud01.glb',
 	'cloud02.glb',
 	'cloud03.glb',
-	/*'cloud04.glb',*/
+	'cloud04.glb',
 ];
 let loadedClouds = 0;
 for (let index = 0; index < clouds.length; index++) {
@@ -262,7 +262,7 @@ for (let index = 0; index < clouds.length; index++) {
 		clouds[index] = gltf.scene.children[0];
 		loadedClouds++;
 		if (loadedClouds === clouds.length) {
-			const count = 30;
+			const count = 40;
 			for (let index = 0; index < count; index++) {
 				spawnCloud(index / count, count);
 			}
@@ -288,8 +288,8 @@ const spawnCloud = (position, count) => {
 	element.rotation.y = Math.random() * Math.PI * 2;
 	element.position.y = 100 + (Math.random() > 0.5 ? 400 : 0);
 
-	const direction = ((Math.random() * Math.PI * 2) / count) + (position * Math.PI * 2);
-	const distance = Math.random() * 1000 + 400;
+	const direction = ((Math.random() * Math.PI) / count) + (position * Math.PI * 2);
+	const distance = Math.random() * 800 + 600;
 	element.position.x = Math.sin(direction) * distance;
 	element.position.z = Math.cos(direction) * distance;
 	cloudGroup.add(element);
