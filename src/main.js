@@ -2,8 +2,8 @@ import TwitchChat from "twitch-chat-emotes-threejs";
 import * as THREE from "three";
 import Stats from "stats-js";
 import "./main.css";
+import { applyShader } from './utils';
 
-window.shaderPID = 10000;
 
 /*
 ** connect to twitch chat
@@ -50,7 +50,7 @@ const ChatInstance = new TwitchChat({
 })
 
 /*
-** Initiate ThreejS scene
+** Initiate ThreeJS
 */
 
 const camera = new THREE.PerspectiveCamera(
@@ -80,34 +80,6 @@ window.addEventListener('DOMContentLoaded', () => {
 	document.body.appendChild(renderer.domElement);
 	draw();
 })
-
-/*
-** Draw loop
-*/
-let lastFrame = performance.now();
-function draw() {
-	if (stats) stats.begin();
-	requestAnimationFrame(draw);
-	const delta = Math.min(1, Math.max(0, (performance.now() - lastFrame) / 1000));
-	lastFrame = performance.now();
-
-
-	for (let index = sceneEmoteArray.length - 1; index >= 0; index--) {
-		const element = sceneEmoteArray[index];
-		element.position.addScaledVector(element.velocity, delta);
-		if (element.timestamp + element.lifespan < Date.now()) {
-			sceneEmoteArray.splice(index, 1);
-			scene.remove(element);
-		} else {
-			element.update();
-		}
-	}
-
-	cloudGroup.tick(delta);
-
-	renderer.render(scene, camera);
-	if (stats) stats.end();
-};
 
 
 /*
@@ -161,7 +133,7 @@ ChatInstance.listen((emotes) => {
 
 
 /*
-	Ocean setup
+	Scene setup
 */
 const ambientLight = new THREE.AmbientLight(new THREE.Color('#9EFFF7'), 0.1);
 const sunLight = new THREE.DirectionalLight(new THREE.Color('#FFFFFF'), 1);
@@ -193,45 +165,6 @@ applyShader(ocean.material);
 ocean.geometry.rotateX(-Math.PI / 2);
 scene.add(ocean);
 
-import waterVert from './water.vert';
-import windVert from './wind.vert';
-import snoiseShader from './snoise.glsl';
-function applyShader(material, delayed = false, type = 'water') {
-	const tickUniforms = () => {
-		if (uniforms) {
-			uniforms.u_time.value = performance.now() + (delayed ? -250 : 0);
-		}
-		window.requestAnimationFrame(tickUniforms);
-	}
-	let uniforms = null;
-	//material.onBeforeCompile(())
-	material.onBeforeCompile = function (shader) {
-		shader.uniforms.u_time = { value: Math.random() * 1000 };
-		uniforms = shader.uniforms;
-		tickUniforms();
-
-		material.userData.shader = shader;
-		shader.vertexShader = shader.vertexShader.replace(
-			'void main()',
-			`
-				uniform float u_time;
-				${snoiseShader}
-				void main()
-			`);
-		shader.vertexShader = shader.vertexShader.replace(
-			'#include <begin_vertex>',
-			`
-			#include <begin_vertex>
-			${type === 'water' ? waterVert : ''}
-			${type === 'wind' ? windVert : ''}
-		`);
-	};
-
-	// Make sure WebGLRenderer doesn't reuse a single program
-	ocean.customProgramCacheKey = function () {
-		return parseInt(window.shaderPID++); // some random ish number
-	};
-}
 
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 const modelLoader = new GLTFLoader();
@@ -245,52 +178,34 @@ modelLoader.load('/island.glb', function (gltf) {
 	applyShader(tree.material, false, 'wind')
 });
 
-const cloudGroup = new THREE.Group();
-cloudGroup.tick = (delta) => {
-	cloudGroup.rotation.y -= delta * 0.01;
-}
+import { cloudGroup } from './clouds';
 scene.add(cloudGroup);
-const clouds = [
-	'cloud01.glb',
-	'cloud02.glb',
-	'cloud03.glb',
-	'cloud04.glb',
-];
-let loadedClouds = 0;
-for (let index = 0; index < clouds.length; index++) {
-	modelLoader.load('/clouds/' + clouds[index], (gltf) => {
-		clouds[index] = gltf.scene.children[0];
-		loadedClouds++;
-		if (loadedClouds === clouds.length) {
-			const count = 40;
-			for (let index = 0; index < count; index++) {
-				spawnCloud(index / count, count);
-			}
+
+
+/*
+** Draw loop
+*/
+let lastFrame = performance.now();
+function draw() {
+	if (stats) stats.begin();
+	requestAnimationFrame(draw);
+	const delta = Math.min(1, Math.max(0, (performance.now() - lastFrame) / 1000));
+	lastFrame = performance.now();
+
+
+	for (let index = sceneEmoteArray.length - 1; index >= 0; index--) {
+		const element = sceneEmoteArray[index];
+		element.position.addScaledVector(element.velocity, delta);
+		if (element.timestamp + element.lifespan < Date.now()) {
+			sceneEmoteArray.splice(index, 1);
+			scene.remove(element);
+		} else {
+			element.update();
 		}
-	});
-}
-const cloudMat = new THREE.MeshPhongMaterial({
-	color: 0x666666,
-	emissive: 0xBBBBBB,
-	flatShading: true,
-	fog: false,
-	shininess: 0,
-})
+	}
 
-const spawnCloud = (position, count) => {
-	const cloud = clouds[Math.floor(Math.random() * clouds.length)];
-	if (typeof cloud === 'string') return;
-	const element = new THREE.Mesh(
-		cloud.geometry,
-		cloudMat
-	);
-	element.scale.setScalar(40 * Math.pow(Math.random(), 2) + 10);
-	element.rotation.y = Math.random() * Math.PI * 2;
-	element.position.y = 100 + (Math.random() > 0.5 ? 400 : 0);
+	cloudGroup.tick(delta);
 
-	const direction = ((Math.random() * Math.PI) / count) + (position * Math.PI * 2);
-	const distance = Math.random() * 800 + 600;
-	element.position.x = Math.sin(direction) * distance;
-	element.position.z = Math.cos(direction) * distance;
-	cloudGroup.add(element);
+	renderer.render(scene, camera);
+	if (stats) stats.end();
 };
