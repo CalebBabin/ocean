@@ -46,7 +46,8 @@ const ChatInstance = new TwitchChat({
 	},
 
 	channels,
-	maximumEmoteLimit: 3,
+	maximumEmoteLimit: 4,
+	duplicateEmoteLimit: 2,
 })
 
 /*
