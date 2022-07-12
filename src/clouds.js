@@ -18,7 +18,7 @@ for (let index = 0; index < clouds.length; index++) {
 		clouds[index] = gltf.scene.children[0];
 		loadedClouds++;
 		if (loadedClouds === clouds.length) {
-			const count = 40;
+			const count = 20;
 			for (let index = 0; index < count; index++) {
 				spawnCloud(index / count, count);
 			}
